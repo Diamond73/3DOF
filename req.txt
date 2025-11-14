@@ -1,0 +1,9 @@
+numpy<2
+roboticstoolbox-python
+spatialmath-python
+scipy
+matplotlib
+opencv-python-headless
+ansitable
+swift
+matplotlib
