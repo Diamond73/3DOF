@@ -29,36 +29,39 @@ def create_3dof(size):
     robot = rtb.Robot(ets, name="V0.1")  
     return robot
 
-def quick_visualization(robot, target, sol=None):
+
+def env_init(robot):
     env = PyPlot()
     env.launch()
     env.add(robot)
-    
-    # Показываем в нулевой позе
-    robot.q = [0, 0, 0]
+    robot.q = [0,0,0]
     env.step()
-    
-    # Показываем в решении ОК (если есть)
-    if sol and sol.success:
-        robot.q = sol.q
-        env.step()
-        print(f"Поза решения: {sol.q}")
-        
-        # Целевая точка
-        ax = env.ax
-        ax.scatter(target.t[0], target.t[1], target.t[2], 
-                  c='red', s=200, marker='*', label=f'Target {target.t}')
+    return env
+
+def vis(env,robot, target, sol=None):
+    robot.q = sol.q
+    env.step()
+    ax = env.ax
+    ax.scatter(target.t[0], target.t[1], target.t[2], 
+        c='red', s=200, marker='*', label=f'Target {target.t}')
         
         # Достигнутая точка
-        T_achieved = robot.fkine(sol.q)
-        ax.scatter(T_achieved.t[0], T_achieved.t[1], T_achieved.t[2],
-                  c='green', s=100, marker='o', label='Achieved')
-        
-        ax.legend()
-    env.hold()
+    T_achieved = robot.fkine(sol.q)
+    ax.scatter(T_achieved.t[0], T_achieved.t[1], T_achieved.t[2],
+        c='green', s=100, marker='o', label='Achieved')
+    env.ax.legend()
+    env.ax.set_xlabel('X')
+    env.ax.set_ylabel('Y') 
+    env.ax.set_zlabel('Z')
+    env.ax.set_title('Robot Manipulator')
+    
+    # Обновляем отображение
+    plt.draw()
+    plt.pause(0.01)
 
-# Основной код
+
 robot = create_3dof([0.1, 0.2, 0.3])
+env = env_init(robot)
 q_init = [0, 0, 0]
 print(f"Введите координаты через точку в порядке x y z. Чтобы выйти нажмите q")
 user_input = input()
@@ -73,11 +76,10 @@ while user_input != "q":
         print(f"Целевая позиция: {target.t}")
         print(f"Достигнутая позиция: {T_achieved.t}")
         print(f"Фактическая ошибка: {np.linalg.norm(T_achieved.t - target.t):.6f}")
-        quick_visualization(robot, target, sol)
+        vis(env, robot, target, sol)
         q_init=sol.q
     else:
         print(f"Цель недостижима")
-        quick_visualization(robot, target)
     user_input = input()
 
     
