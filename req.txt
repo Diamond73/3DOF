@@ -6,9 +6,6 @@ matplotlib
 opencv-python-headless
 ansitable
 swift
-<<<<<<< HEAD
 matplotlib
 pynput
-=======
 matplotlib
->>>>>>> 0cbf4ebbf8c5e98bce661759fd1d0c702fbe0ff0
